@@ -14,13 +14,13 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const appointmentsResponse = await axios.get(
-          "http://localhost:8080/api/v1/appointment/getall",
+          "https://hospital-assignment-backend.onrender.com/api/v1/appointment/getall",
           { withCredentials: true }
         );
         setAppointments(appointmentsResponse.data.appointments);
 
         const doctorsResponse = await axios.get(
-          "http://localhost:8080/api/v1/user/doctors",
+          "https://hospital-assignment-backend.onrender.com/api/v1/user/doctors",
           { withCredentials: true }
         );
         setDoctors(doctorsResponse.data.doctors);
@@ -39,7 +39,7 @@ const Dashboard = () => {
   const handleUpdateStatus = async (appointmentId, status) => {
     try {
       const { data } = await axios.put(
-        `http://localhost:8080/api/v1/appointment/update/${appointmentId}`,
+        `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointmentId}`,
         { status },
         { withCredentials: true }
       );
@@ -174,7 +174,7 @@ const Dashboard = () => {
                             try {
                               const newValue = e.target.checked;
                               const { data } = await axios.put(
-                                `http://localhost:8080/api/v1/appointment/update/${appointment._id}`,
+                                `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointment._id}`,
                                 { hasVisited: newValue },
                                 { withCredentials: true }
                               );

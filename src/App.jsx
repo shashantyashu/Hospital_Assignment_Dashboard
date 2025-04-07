@@ -21,7 +21,7 @@ const App = () => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/v1/user/admin/me",
+          "https://hospital-assignment-backend.onrender.com/api/v1/user/admin/me",
           {
             withCredentials: true,
           }
