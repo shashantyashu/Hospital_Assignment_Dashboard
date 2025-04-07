@@ -120,8 +120,8 @@ const Login = () => {
     }
   };
 
-  if (!isAuthenticated) {
-    return <Navigate to={"/login"} />;
+  if (isAuthenticated) {
+    return <Navigate to={"/"} />;
   }
 
   return (
