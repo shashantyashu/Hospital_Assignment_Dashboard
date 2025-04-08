@@ -81,12 +81,23 @@ const Dashboard = () => {
         localStorage.getItem("adminToken") ||
         localStorage.getItem("doctorToken");
 
+        let tokenName = "";
+        if (localStorage.getItem("adminToken")) {
+          tokenName = "adminToken";
+        } else if (localStorage.getItem("doctorToken")) {
+          tokenName = "doctorToken";
+        } else {
+          toast.error("No token found");
+          return;
+        }
+
       const { data } = await axios.put(
         `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointmentId}`,
         { status },
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            Tokenname: tokenName,
           },
         }
       );
@@ -162,6 +173,7 @@ const Dashboard = () => {
                 <th>Status</th>
                 <th>Visited</th>
                 {admin.role === "Doctor" && <th>Check In</th>}{" "}
+                {admin.role === "Doctor" && <th>Delete</th>}{" "}
                 {/* ✅ Only for doctors */}
               </tr>
             </thead>
