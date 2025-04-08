@@ -43,9 +43,63 @@ const AddNewDoctor = () => {
     };
   };
 
+  // const handleAddNewDoctor = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("firstName", firstName);
+  //     formData.append("lastName", lastName);
+  //     formData.append("email", email);
+  //     formData.append("phone", phone);
+  //     formData.append("password", password);
+  //     formData.append("nic", nic);
+  //     formData.append("dob", dob);
+  //     formData.append("gender", gender);
+  //     formData.append("doctorDepartment", doctorDepartment);
+  //     formData.append("docAvatar", docAvatar);
+  //     await axios
+  //       .post("https://hospital-assignment-backend.onrender.com/api/v1/user/doctor/addnew", formData, {
+  //         withCredentials: true,
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       })
+  //       .then((res) => {
+  //         toast.success(res.data.message);
+  //         setIsAuthenticated(true);
+  //         navigateTo("/");
+  //         setFirstName("");
+  //         setLastName("");
+  //         setEmail("");
+  //         setPhone("");
+  //         setNic("");
+  //         setDob("");
+  //         setGender("");
+  //         setPassword("");
+  //       });
+  //   } catch (error) {
+  //     toast.error(error.response.data.message);
+  //   }
+  // };
+
   const handleAddNewDoctor = async (e) => {
     e.preventDefault();
     try {
+      const token = localStorage.getItem("adminToken");
+
+      let tokenName = "";
+      if (localStorage.getItem("adminToken")) {
+        tokenName = "adminToken";
+      } else if (localStorage.getItem("doctorToken")) {
+        tokenName = "doctorToken";
+      } else {
+        toast.error("No token found");
+        return;
+      }
+
+      if (!token) {
+        toast.error("No authentication token found!");
+        return;
+      }
+
       const formData = new FormData();
       formData.append("firstName", firstName);
       formData.append("lastName", lastName);
@@ -57,26 +111,37 @@ const AddNewDoctor = () => {
       formData.append("gender", gender);
       formData.append("doctorDepartment", doctorDepartment);
       formData.append("docAvatar", docAvatar);
-      await axios
-        .post("https://hospital-assignment-backend.onrender.com/api/v1/user/doctor/addnew", formData, {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        })
-        .then((res) => {
-          toast.success(res.data.message);
-          setIsAuthenticated(true);
-          navigateTo("/");
-          setFirstName("");
-          setLastName("");
-          setEmail("");
-          setPhone("");
-          setNic("");
-          setDob("");
-          setGender("");
-          setPassword("");
-        });
+
+      const { data } = await axios.post(
+        "https://hospital-assignment-backend.onrender.com/api/v1/user/doctor/addnew",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+            Tokenname: tokenName,
+          },
+        }
+      );
+
+      toast.success(data.message);
+      setIsAuthenticated(true);
+      navigateTo("/");
+
+      // Reset form
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setPhone("");
+      setNic("");
+      setDob("");
+      setGender("");
+      setPassword("");
+      setDoctorDepartment("");
+      setDocAvatar("");
+      setDocAvatarPreview("");
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to register doctor");
     }
   };
 
@@ -86,7 +151,7 @@ const AddNewDoctor = () => {
   return (
     <section className="page">
       <section className="container add-doctor-form">
-        <img src="/logo.png" alt="logo" className="logo"/>
+        <img src="/logo.png" alt="logo" className="logo" />
         <h1 className="form-title">REGISTER A NEW DOCTOR</h1>
         <form onSubmit={handleAddNewDoctor}>
           <div className="first-wrapper">
