@@ -34,6 +34,14 @@ const Sidebar = () => {
     try {
       const token =
         localStorage.getItem("adminToken") || localStorage.getItem("doctorToken");
+        if(localStorage.getItem("adminToken")){
+          const tokenName = "adminToken";
+        }else if(localStorage.getItem("doctorToken")){
+          const tokenName = "doctorToken";
+        }else{
+          toast.error("No token found");
+          return; 
+        }
         console.log(token);
   
       await axios.get(
@@ -41,6 +49,7 @@ const Sidebar = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            Tokenname: `${tokenName}`,
           },
         }
       );
