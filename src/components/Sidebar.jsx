@@ -16,19 +16,45 @@ const Sidebar = () => {
 
   const { isAuthenticated, setIsAuthenticated, admin } = useContext(Context);
 
+  // const handleLogout = async () => {
+  //   await axios
+  //     .get("https://hospital-assignment-backend.onrender.com/api/v1/user/admin/logout", {
+  //       withCredentials: true,
+  //     })
+  //     .then((res) => {
+  //       toast.success(res.data.message);
+  //       setIsAuthenticated(false);
+  //     })
+  //     .catch((err) => {
+  //       toast.error(err.response.data.message);
+  //     });
+  // };
+
   const handleLogout = async () => {
-    await axios
-      .get("https://hospital-assignment-backend.onrender.com/api/v1/user/admin/logout", {
-        withCredentials: true,
-      })
-      .then((res) => {
-        toast.success(res.data.message);
-        setIsAuthenticated(false);
-      })
-      .catch((err) => {
-        toast.error(err.response.data.message);
-      });
+    try {
+      const token =
+        localStorage.getItem("adminToken") || localStorage.getItem("doctorToken");
+  
+      await axios.get(
+        "https://hospital-assignment-backend.onrender.com/api/v1/user/admin/logout",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      // Clear token from localStorage
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("doctorToken");
+  
+      toast.success("Logged out successfully!");
+      setIsAuthenticated(false);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Logout failed");
+    }
   };
+  
 
   const navigateTo = useNavigate();
 

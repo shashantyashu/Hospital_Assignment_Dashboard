@@ -17,24 +17,48 @@ const App = () => {
   const { isAuthenticated, setIsAuthenticated, admin, setAdmin } =
     useContext(Context);
 
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         "https://hospital-assignment-backend.onrender.com/api/v1/user/admin/me",
+  //         {
+  //           withCredentials: true,
+  //         }
+  //       );
+  //       setIsAuthenticated(true);
+  //       setAdmin(response.data.user);
+  //     } catch (error) {
+  //       setIsAuthenticated(false);
+  //       setAdmin({});
+  //     }
+  //   };
+  //   fetchUser();
+  // }, [isAuthenticated]);
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        const token = localStorage.getItem("adminToken") || localStorage.getItem("doctorToken");
         const response = await axios.get(
           "https://hospital-assignment-backend.onrender.com/api/v1/user/admin/me",
           {
-            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
         setIsAuthenticated(true);
         setAdmin(response.data.user);
       } catch (error) {
+        localStorage.removeItem("token");
         setIsAuthenticated(false);
         setAdmin({});
       }
     };
     fetchUser();
-  }, [isAuthenticated]);
+  }, []);
+  
 
   return (
     <Router>
