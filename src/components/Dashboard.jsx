@@ -230,6 +230,7 @@ const Dashboard = () => {
                             checked={appointment.hasVisited}
                             onChange={async (e) => {
                               try {
+                                const newValue = e.target.checked;
                                 const token =
                                   localStorage.getItem("adminToken") ||
                                   localStorage.getItem("doctorToken");
@@ -248,6 +249,7 @@ const Dashboard = () => {
 
                                 await axios.put(
                                   `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointmentId}`,
+                                  { hasVisited: newValue },
                                   {
                                     headers: {
                                       Authorization: `Bearer ${token}`,
@@ -257,7 +259,7 @@ const Dashboard = () => {
                                 );
                                 setAppointments((prev) =>
                                   prev.map((a) =>
-                                    a._id === appointmentId ? { ...a } : a
+                                    a._id === appointmentId ? { ...a, hasVisited: newValue } : a
                                   )
                                 );
                                 toast.success("Status updated");
