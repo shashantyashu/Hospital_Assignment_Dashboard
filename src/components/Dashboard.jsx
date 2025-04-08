@@ -231,7 +231,7 @@ const Dashboard = () => {
                                 );
                                 setAppointments((prev) =>
                                   prev.map((a) =>
-                                    a._id === appointmentId ? { ...a, status } : a
+                                    a._id === appointmentId ? { ...a} : a
                                   )
                                 );
                                 toast.success("Status updated");
