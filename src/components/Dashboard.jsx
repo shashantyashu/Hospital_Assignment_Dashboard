@@ -307,7 +307,7 @@ const Dashboard = () => {
                                 }
 
                                 await axios.put(
-                                  `https://hospital-assignment-backend.onrender.com/api/v1/appointment/delete/${appointmentId}`,
+                                  `https://hospital-assignment-backend.onrender.com/api/v1/appointment/delete/${appointment._id}`,
                                   {
                                     headers: {
                                       Authorization: `Bearer ${token}`,
