@@ -281,60 +281,59 @@ const Dashboard = () => {
                     {/* ✅ Only show Delete button for Admins */}
                     {admin.role === "Doctor" && (
                       <td>
-                        <div class="form-check">
-                          <input
-                            style={{ marginLeft: "20px" }}
-                            type="checkbox"
-                            class="form-check-input"
-                            id="checkDefault"
-                            // checked={appointment.deleted}
-                            onChange={async (e) => {
-                              try {
-                                const token =
-                                  localStorage.getItem("adminToken") ||
-                                  localStorage.getItem("doctorToken");
-
-                                let tokenName = "";
-                                if (localStorage.getItem("adminToken")) {
-                                  tokenName = "adminToken";
-                                } else if (
-                                  localStorage.getItem("doctorToken")
-                                ) {
-                                  tokenName = "doctorToken";
-                                } else {
-                                  toast.error("No token found");
-                                  return;
-                                }
-
-                                await axios.put(
-                                  `https://hospital-assignment-backend.onrender.com/api/v1/appointment/delete/${appointment._id}`,
-                                  {
-                                    headers: {
-                                      Authorization: `Bearer ${token}`,
-                                      Tokenname: tokenName,
-                                    },
-                                  }
-                                );
-                                setAppointments((prev) =>
-                                  prev.map((a) =>
-                                    a._id === appointmentId ? { ...a } : a
-                                  )
-                                );
-                                toast.success("Status updated");
-                              } catch (error) {
-                                toast.error(
-                                  error.response?.data?.message ||
-                                    "Failed to update status"
-                                );
+                      <div className="form-check">
+                        <input
+                          style={{ marginLeft: "20px" }}
+                          type="checkbox"
+                          className="form-check-input"
+                          id={`checkDefault-${appointment._id}`}
+                          onChange={async (e) => {
+                            try {
+                              const token =
+                                localStorage.getItem("adminToken") ||
+                                localStorage.getItem("doctorToken");
+                    
+                              let tokenName = "";
+                              if (localStorage.getItem("adminToken")) {
+                                tokenName = "adminToken";
+                              } else if (localStorage.getItem("doctorToken")) {
+                                tokenName = "doctorToken";
+                              } else {
+                                toast.error("No token found");
+                                return;
                               }
-                            }}
-                          />
-                          <label
-                            class="form-check-label"
-                            for="checkDefault"
-                          ></label>
-                        </div>
-                      </td>
+                    
+                              // ✅ Send DELETE request
+                              await axios.delete(
+                                `https://hospital-assignment-backend.onrender.com/api/v1/appointment/delete/${appointment._id}`,
+                                {
+                                  headers: {
+                                    Authorization: `Bearer ${token}`,
+                                    Tokenname: tokenName,
+                                  },
+                                }
+                              );
+                    
+                              // ✅ Update state: remove appointment from list
+                              setAppointments((prev) =>
+                                prev.filter((a) => a._id !== appointment._id)
+                              );
+                    
+                              toast.success("Appointment deleted successfully!");
+                            } catch (error) {
+                              toast.error(
+                                error.response?.data?.message || "Failed to delete appointment"
+                              );
+                            }
+                          }}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor={`checkDefault-${appointment._id}`}
+                        ></label>
+                      </div>
+                    </td>
+                    
                     )}
                   </tr>
                 ))
