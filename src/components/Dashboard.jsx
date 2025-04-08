@@ -248,8 +248,8 @@ const Dashboard = () => {
                                 }
 
                                 await axios.put(
-                                  `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointmentId}`,
-                                  { newValue },
+                                  `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointment._id}`,
+                                  { hasVisited: newValue },
                                   {
                                     headers: {
                                       Authorization: `Bearer ${token}`,
