@@ -10,22 +10,61 @@ const Dashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState([]);
 
+  // useEffect(() => {
+  //   const fetchDashboardData = async () => {
+  //     try {
+  //       const appointmentsResponse = await axios.get(
+  //         "https://hospital-assignment-backend.onrender.com/api/v1/appointment/getall",
+  //         { withCredentials: true }
+  //       );
+  //       setAppointments(appointmentsResponse.data.appointments);
+
+  //       const doctorsResponse = await axios.get(
+  //         "https://hospital-assignment-backend.onrender.com/api/v1/user/doctors",
+  //         { withCredentials: true }
+  //       );
+  //       setDoctors(doctorsResponse.data.doctors);
+
+  //       // console.log("Doctors:", doctorsResponse.data.doctors);
+  //     } catch (error) {
+  //       setAppointments([]);
+  //       setDoctors([]);
+  //       console.error("Dashboard data fetch error:", error);
+  //     }
+  //   };
+
+  //   fetchDashboardData();
+  // }, []);
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        const token =
+          localStorage.getItem("adminToken") ||
+          localStorage.getItem("doctorToken");
+
+        if (!token) {
+          toast.error("No token found");
+          return;
+        }
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
         const appointmentsResponse = await axios.get(
           "https://hospital-assignment-backend.onrender.com/api/v1/appointment/getall",
-          { withCredentials: true }
+          config
         );
         setAppointments(appointmentsResponse.data.appointments);
 
         const doctorsResponse = await axios.get(
           "https://hospital-assignment-backend.onrender.com/api/v1/user/doctors",
-          { withCredentials: true }
+          config
         );
         setDoctors(doctorsResponse.data.doctors);
-
-        console.log("Doctors:", doctorsResponse.data.doctors);
       } catch (error) {
         setAppointments([]);
         setDoctors([]);
@@ -38,10 +77,18 @@ const Dashboard = () => {
 
   const handleUpdateStatus = async (appointmentId, status) => {
     try {
+      const token =
+        localStorage.getItem("adminToken") ||
+        localStorage.getItem("doctorToken");
+
       const { data } = await axios.put(
         `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointmentId}`,
         { status },
-        { withCredentials: true }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setAppointments((prevAppointments) =>
         prevAppointments.map((appointment) =>
@@ -88,9 +135,8 @@ const Dashboard = () => {
                 <h5>{admin && `${admin.firstName} ${admin.lastName}`}</h5>
               </div>
               <p>
-              <u>({admin && admin.role})</u> &nbsp; &nbsp;
-                Welcome to your dashboard. You can manage and review your
-                appointments here.
+                <u>({admin && admin.role})</u> &nbsp; &nbsp; Welcome to your
+                dashboard. You can manage and review your appointments here.
               </p>
             </div>
           </div>
@@ -164,34 +210,40 @@ const Dashboard = () => {
                     {admin.role === "Doctor" && (
                       <td>
                         <div class="form-check">
-                        <input
-                          style={{ marginLeft: "20px" }}
-                          type="checkbox"
-                          class="form-check-input"
-                          id="checkDefault"
-                          checked={appointment.hasVisited}
-                          onChange={async (e) => {
-                            try {
-                              const newValue = e.target.checked;
-                              const { data } = await axios.put(
-                                `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointment._id}`,
-                                { hasVisited: newValue },
-                                { withCredentials: true }
-                              );
-                              toast.success("Check-in status updated");
-                              setAppointments((prev) =>
-                                prev.map((a) =>
-                                  a._id === appointment._id
-                                    ? { ...a, hasVisited: newValue }
-                                    : a
-                                )
-                              );
-                            } catch (error) {
-                              toast.error("Failed to update check-in status");
-                            }
-                          }}
-                        />
-                        <label class="form-check-label" for="checkDefault"></label>
+                          <input
+                            style={{ marginLeft: "20px" }}
+                            type="checkbox"
+                            class="form-check-input"
+                            id="checkDefault"
+                            checked={appointment.hasVisited}
+                            onChange={async (e) => {
+                              try {
+                                const token =
+                                  localStorage.getItem("adminToken") || localStorage.getItem("doctorToken");
+                            
+                                await axios.put(
+                                  `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointmentId}`,
+                                  {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`,
+                                    },
+                                  }
+                                );
+                                setAppointments((prev) =>
+                                  prev.map((a) =>
+                                    a._id === appointmentId ? { ...a, status } : a
+                                  )
+                                );
+                                toast.success("Status updated");
+                              } catch (error) {
+                                toast.error(error.response?.data?.message || "Failed to update status");
+                              }
+                            }}
+                          />
+                          <label
+                            class="form-check-label"
+                            for="checkDefault"
+                          ></label>
                         </div>
                       </td>
                     )}
