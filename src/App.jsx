@@ -39,12 +39,25 @@ const App = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("adminToken") || localStorage.getItem("doctorToken");
+        const token =
+          localStorage.getItem("adminToken") ||
+          localStorage.getItem("doctorToken");
+
+        let tokenName = "";
+        if (localStorage.getItem("adminToken")) {
+          tokenName = "adminToken";
+        } else if (localStorage.getItem("doctorToken")) {
+          tokenName = "doctorToken";
+        } else {
+          toast.error("No token found");
+          return;
+        }
         const response = await axios.get(
           "https://hospital-assignment-backend.onrender.com/api/v1/user/admin/me",
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              Tokenname: tokenName,
             },
           }
         );
@@ -58,7 +71,6 @@ const App = () => {
     };
     fetchUser();
   }, []);
-  
 
   return (
     <Router>
