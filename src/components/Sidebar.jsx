@@ -34,6 +34,7 @@ const Sidebar = () => {
     try {
       const token =
         localStorage.getItem("adminToken") || localStorage.getItem("doctorToken");
+        console.log(token);
   
       await axios.get(
         "https://hospital-assignment-backend.onrender.com/api/v1/user/admin/logout",
