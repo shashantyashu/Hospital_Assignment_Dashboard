@@ -285,7 +285,7 @@ const Dashboard = () => {
                             type="checkbox"
                             class="form-check-input"
                             id="checkDefault"
-                            checked={appointment.hasVisited}
+                            // checked={appointment.deleted}
                             onChange={async (e) => {
                               try {
                                 const token =
