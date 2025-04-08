@@ -81,15 +81,15 @@ const Dashboard = () => {
         localStorage.getItem("adminToken") ||
         localStorage.getItem("doctorToken");
 
-        let tokenName = "";
-        if (localStorage.getItem("adminToken")) {
-          tokenName = "adminToken";
-        } else if (localStorage.getItem("doctorToken")) {
-          tokenName = "doctorToken";
-        } else {
-          toast.error("No token found");
-          return;
-        }
+      let tokenName = "";
+      if (localStorage.getItem("adminToken")) {
+        tokenName = "adminToken";
+      } else if (localStorage.getItem("doctorToken")) {
+        tokenName = "doctorToken";
+      } else {
+        toast.error("No token found");
+        return;
+      }
 
       const { data } = await axios.put(
         `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointmentId}`,
@@ -231,24 +231,99 @@ const Dashboard = () => {
                             onChange={async (e) => {
                               try {
                                 const token =
-                                  localStorage.getItem("adminToken") || localStorage.getItem("doctorToken");
-                            
+                                  localStorage.getItem("adminToken") ||
+                                  localStorage.getItem("doctorToken");
+
+                                  let tokenName = "";
+                                if (localStorage.getItem("adminToken")) {
+                                  tokenName = "adminToken";
+                                } else if (
+                                  localStorage.getItem("doctorToken")
+                                ) {
+                                  tokenName = "doctorToken";
+                                } else {
+                                  toast.error("No token found");
+                                  return;
+                                }
+
                                 await axios.put(
                                   `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointmentId}`,
                                   {
                                     headers: {
                                       Authorization: `Bearer ${token}`,
+                                      Tokenname: tokenName,
                                     },
                                   }
                                 );
                                 setAppointments((prev) =>
                                   prev.map((a) =>
-                                    a._id === appointmentId ? { ...a} : a
+                                    a._id === appointmentId ? { ...a } : a
                                   )
                                 );
                                 toast.success("Status updated");
                               } catch (error) {
-                                toast.error(error.response?.data?.message || "Failed to update status");
+                                toast.error(
+                                  error.response?.data?.message ||
+                                    "Failed to update status"
+                                );
+                              }
+                            }}
+                          />
+                          <label
+                            class="form-check-label"
+                            for="checkDefault"
+                          ></label>
+                        </div>
+                      </td>
+                    )}
+                    {/* ✅ Only show Delete button for Admins */}
+                    {admin.role === "Doctor" && (
+                      <td>
+                        <div class="form-check">
+                          <input
+                            style={{ marginLeft: "20px" }}
+                            type="checkbox"
+                            class="form-check-input"
+                            id="checkDefault"
+                            checked={appointment.hasVisited}
+                            onChange={async (e) => {
+                              try {
+                                const token =
+                                  localStorage.getItem("adminToken") ||
+                                  localStorage.getItem("doctorToken");
+
+                                let tokenName = "";
+                                if (localStorage.getItem("adminToken")) {
+                                  tokenName = "adminToken";
+                                } else if (
+                                  localStorage.getItem("doctorToken")
+                                ) {
+                                  tokenName = "doctorToken";
+                                } else {
+                                  toast.error("No token found");
+                                  return;
+                                }
+
+                                await axios.put(
+                                  `https://hospital-assignment-backend.onrender.com/api/v1/appointment/delete/${appointmentId}`,
+                                  {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`,
+                                      Tokenname: tokenName,
+                                    },
+                                  }
+                                );
+                                setAppointments((prev) =>
+                                  prev.map((a) =>
+                                    a._id === appointmentId ? { ...a } : a
+                                  )
+                                );
+                                toast.success("Status updated");
+                              } catch (error) {
+                                toast.error(
+                                  error.response?.data?.message ||
+                                    "Failed to update status"
+                                );
                               }
                             }}
                           />
