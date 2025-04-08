@@ -34,10 +34,12 @@ const Sidebar = () => {
     try {
       const token =
         localStorage.getItem("adminToken") || localStorage.getItem("doctorToken");
+
+        let tokenName = "";
         if(localStorage.getItem("adminToken")){
-          const tokenName = "adminToken";
+           tokenName = "adminToken";
         }else if(localStorage.getItem("doctorToken")){
-          const tokenName = "doctorToken";
+           tokenName = "doctorToken";
         }else{
           toast.error("No token found");
           return; 
@@ -49,7 +51,7 @@ const Sidebar = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            Tokenname: `${tokenName}`,
+            Tokenname: tokenName,
           },
         }
       );
