@@ -3,6 +3,7 @@ import { Context } from "../main";
 import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
+import Navbar from "./Navbar";
 
 const AddNewAdmin = () => {
   const { isAuthenticated, setIsAuthenticated } = useContext(Context);
@@ -17,36 +18,6 @@ const AddNewAdmin = () => {
   const [password, setPassword] = useState("");
 
   const navigateTo = useNavigate();
-
-  // const handleAddNewAdmin = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     await axios
-  //       .post(
-  //         "https://hospital-assignment-backend.onrender.com/api/v1/user/admin/addnew",
-  //         { firstName, lastName, email, phone, nic, dob, gender, password },
-  //         {
-  //           withCredentials: true,
-  //           headers: { "Content-Type": "application/json" },
-  //         }
-  //       )
-  //       .then((res) => {
-  //         toast.success(res.data.message);
-  //         setIsAuthenticated(true);
-  //         navigateTo("/");
-  //         setFirstName("");
-  //         setLastName("");
-  //         setEmail("");
-  //         setPhone("");
-  //         setNic("");
-  //         setDob("");
-  //         setGender("");
-  //         setPassword("");
-  //       });
-  //   } catch (error) {
-  //     toast.error(error.response.data.message);
-  //   }
-  // };
 
   const handleAddNewAdmin = async (e) => {
     e.preventDefault();
@@ -84,7 +55,6 @@ const AddNewAdmin = () => {
       setIsAuthenticated(true);
       navigateTo("/");
 
-      // Clear form fields
       setFirstName("");
       setLastName("");
       setEmail("");
@@ -103,55 +73,69 @@ const AddNewAdmin = () => {
   }
 
   return (
-    <section className="page">
-      <section className="container form-component add-admin-form">
-        <img src="/logo.png" alt="logo" className="logo" />
-        <h1 className="form-title">ADD NEW ADMIN</h1>
-        <form onSubmit={handleAddNewAdmin}>
-          <div>
+    <>
+      <Navbar />
+    <section className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-3xl bg-white p-8 rounded-lg shadow-md">
+        <div className="flex justify-center mb-4">
+          <img src="/Hos_logo.png" alt="logo" className="h-12" />
+        </div>
+        <h1 className="text-2xl font-semibold text-center mb-6">ADD NEW ADMIN</h1>
+        <form onSubmit={handleAddNewAdmin} className="space-y-4">
+          <div className="flex flex-col md:flex-row gap-4">
             <input
               type="text"
               placeholder="First Name"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               type="text"
               placeholder="Last Name"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
+          <div className="flex flex-col md:flex-row gap-4">
             <input
               type="text"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               type="number"
               placeholder="Mobile Number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
+          <div className="flex flex-col md:flex-row gap-4">
             <input
               type="number"
               placeholder="NIC"
               value={nic}
               onChange={(e) => setNic(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
-              type={"date"}
+              type="date"
               placeholder="Date of Birth"
               value={dob}
               onChange={(e) => setDob(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
-            <select value={gender} onChange={(e) => setGender(e.target.value)}>
+          <div className="flex flex-col md:flex-row gap-4">
+            <select
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               <option value="">Select Gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -161,15 +145,23 @@ const AddNewAdmin = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div style={{ justifyContent: "center", alignItems: "center" }}>
-            <button type="submit">ADD NEW ADMIN</button>
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="px-6 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition duration-200"
+            >
+              ADD NEW ADMIN
+            </button>
           </div>
         </form>
-      </section>
+      </div>
     </section>
+    </>
   );
 };
 
 export default AddNewAdmin;
+

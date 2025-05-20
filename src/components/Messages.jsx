@@ -1,74 +1,9 @@
-// import axios from "axios";
-// import React, { useContext, useEffect, useState } from "react";
-// import { toast } from "react-toastify";
-// import { Context } from "../main";
-// import { Navigate } from "react-router-dom";
-
-// const Messages = () => {
-//   const [messages, setMessages] = useState([]);
-//   const { isAuthenticated } = useContext(Context);
-//   useEffect(() => {
-//     const fetchMessages = async () => {
-//       try {
-//         const { data } = await axios.get(
-//           "https://hospital-assignment-backend.onrender.com/api/v1/message/getall",
-//           { withCredentials: true }
-//         );
-//         setMessages(data.messages);
-//       } catch (error) {
-//         console.log(error.response.data.message);
-//       }
-//     };
-//     fetchMessages();
-//   }, []);
-
-//   if (!isAuthenticated) {
-//     return <Navigate to={"/login"} />;
-//   }
-
-//   return (
-//     <section className="page messages">
-//       <h1>MESSAGE</h1>
-//       <div className="banner">
-//         {messages && messages.length > 0 ? (
-//           messages.map((element) => {
-//             return (
-//               <div className="card" key={element._id}>
-//                 <div className="details">
-//                   <p>
-//                     First Name: <span>{element.firstName}</span>
-//                   </p>
-//                   <p>
-//                     Last Name: <span>{element.lastName}</span>
-//                   </p>
-//                   <p>
-//                     Email: <span>{element.email}</span>
-//                   </p>
-//                   <p>
-//                     Phone: <span>{element.phone}</span>
-//                   </p>
-//                   <p>
-//                     Message: <span>{element.message}</span>
-//                   </p>
-//                 </div>
-//               </div>
-//             );
-//           })
-//         ) : (
-//           <h1>No Messages!</h1>
-//         )}
-//       </div>
-//     </section>
-//   );
-// };
-
-// export default Messages;
-
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Context } from "../main";
 import { Navigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 const Messages = () => {
   const [messages, setMessages] = useState([]);
@@ -118,40 +53,49 @@ const Messages = () => {
   }
 
   return (
-    <section className="page messages">
-      <h1>MESSAGE</h1>
-      <div className="banner">
+    <>
+    <Navbar />
+    <section className="min-h-screen p-4 bg-gray-50">
+      <h1 className="text-3xl font-bold text-center mb-8 text-blue-700">Messages</h1>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {messages && messages.length > 0 ? (
-          messages.map((element) => {
-            return (
-              <div className="card" key={element._id}>
-                <div className="details">
-                  <p>
-                    First Name: <span>{element.firstName}</span>
-                  </p>
-                  <p>
-                    Last Name: <span>{element.lastName}</span>
-                  </p>
-                  <p>
-                    Email: <span>{element.email}</span>
-                  </p>
-                  <p>
-                    Phone: <span>{element.phone}</span>
-                  </p>
-                  <p>
-                    Message: <span>{element.message}</span>
-                  </p>
-                </div>
+          messages.map((element) => (
+            <div
+              key={element._id}
+              className="bg-white rounded-lg shadow-md p-6 border border-gray-200"
+            >
+              <div className="space-y-2 text-gray-700">
+                <p>
+                  <span className="font-semibold">First Name:</span>{" "}
+                  {element.firstName}
+                </p>
+                <p>
+                  <span className="font-semibold">Last Name:</span>{" "}
+                  {element.lastName}
+                </p>
+                <p>
+                  <span className="font-semibold">Email:</span> {element.email}
+                </p>
+                <p>
+                  <span className="font-semibold">Phone:</span> {element.phone}
+                </p>
+                <p>
+                  <span className="font-semibold">Message:</span>{" "}
+                  {element.message}
+                </p>
               </div>
-            );
-          })
+            </div>
+          ))
         ) : (
-          <h1>No Messages!</h1>
+          <h2 className="text-center text-lg text-gray-600 col-span-full">
+            No Messages!
+          </h2>
         )}
       </div>
     </section>
+    </>
   );
 };
 
 export default Messages;
-

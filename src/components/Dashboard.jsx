@@ -5,36 +5,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { GoCheckCircleFill } from "react-icons/go";
 import { AiFillCloseCircle } from "react-icons/ai";
+import Navbar from "./Navbar";
 
 const Dashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState([]);
-
-  // useEffect(() => {
-  //   const fetchDashboardData = async () => {
-  //     try {
-  //       const appointmentsResponse = await axios.get(
-  //         "https://hospital-assignment-backend.onrender.com/api/v1/appointment/getall",
-  //         { withCredentials: true }
-  //       );
-  //       setAppointments(appointmentsResponse.data.appointments);
-
-  //       const doctorsResponse = await axios.get(
-  //         "https://hospital-assignment-backend.onrender.com/api/v1/user/doctors",
-  //         { withCredentials: true }
-  //       );
-  //       setDoctors(doctorsResponse.data.doctors);
-
-  //       // console.log("Doctors:", doctorsResponse.data.doctors);
-  //     } catch (error) {
-  //       setAppointments([]);
-  //       setDoctors([]);
-  //       console.error("Dashboard data fetch error:", error);
-  //     }
-  //   };
-
-  //   fetchDashboardData();
-  // }, []);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -81,15 +56,9 @@ const Dashboard = () => {
         localStorage.getItem("adminToken") ||
         localStorage.getItem("doctorToken");
 
-      let tokenName = "";
-      if (localStorage.getItem("adminToken")) {
-        tokenName = "adminToken";
-      } else if (localStorage.getItem("doctorToken")) {
-        tokenName = "doctorToken";
-      } else {
-        toast.error("No token found");
-        return;
-      }
+      let tokenName = localStorage.getItem("adminToken")
+        ? "adminToken"
+        : "doctorToken";
 
       const { data } = await axios.put(
         `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointmentId}`,
@@ -110,7 +79,7 @@ const Dashboard = () => {
       );
       toast.success(data.message);
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to update status");
     }
   };
 
@@ -119,14 +88,6 @@ const Dashboard = () => {
     return <Navigate to={"/login"} />;
   }
 
-  // // 🔍 Filter appointments only for the logged-in doctor
-  // const filteredAppointments = appointments.filter(
-  //   (appointment) => appointment.doctorId === admin._id
-  // );
-
-  // 🔍 Filter appointments:
-  // - If the logged-in user is an Admin, show all appointments
-  // - If the logged-in user is a Doctor, show only their appointments
   const filteredAppointments =
     admin.role === "Admin"
       ? appointments
@@ -136,97 +97,128 @@ const Dashboard = () => {
 
   return (
     <>
-      <section className="dashboard page">
-        <div className="banner">
-          <div className="firstBox">
-            <img src="/doc.png" alt="docImg" />
-            <div className="content">
-              <div>
-                <p>Hello ,</p>
-                <h5>{admin && `${admin.firstName} ${admin.lastName}`}</h5>
-              </div>
-              <p>
-                <u>({admin && admin.role})</u> &nbsp; &nbsp; Welcome to your
-                dashboard. You can manage and review your appointments here.
+      <Navbar />
+      <section className="p-6">
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-2">
+          WELCOME TO NOVACARE HOSPITAL
+        </h1>
+        <div className="grid gap-6 md:grid-cols-3 bg-white shadow rounded-lg p-6 mb-8">
+          <div className="flex items-center space-x-4 col-span-2">
+            {admin.role === "Admin" ? (
+              <img src={"doc1.webp"} alt="docImg" style={{ height: "150px" }} />
+            ) : (
+              <img
+                src={admin.docAvatar?.url || "doc1.webp"}
+                alt="docImg"
+                style={{ height: "150px" }}
+              />
+            )}
+            <div>
+              <p className="text-gray-500">Hello,</p>
+              <h5 className="text-xl font-bold">
+                {admin?.firstName} {admin?.lastName}
+              </h5>
+              <p className="text-sm text-gray-600">
+                <u>({admin?.role})</u> Welcome to your dashboard.
               </p>
             </div>
           </div>
-          <div className="secondBox">
-            <p>Total Appointments</p>
-            <h3>{filteredAppointments.length}</h3>
-          </div>
-          <div className="thirdBox">
-            <p>Registered Doctors</p>
-            <h3>{doctors.length}</h3>
+          <div className="grid gap-4">
+            <div className="bg-blue-100 p-4 rounded text-center">
+              <p className="text-sm">Total Appointments</p>
+              <h3 className="text-lg font-bold">
+                {filteredAppointments.length}
+              </h3>
+            </div>
+            <div className="bg-green-100 p-4 rounded text-center">
+              <p className="text-sm">Registered Doctors</p>
+              <h3 className="text-lg font-bold">{doctors.length}</h3>
+            </div>
           </div>
         </div>
 
-        <div className="banner">
-          <h5>Appointments</h5>
-          <table>
+        <div className="bg-white shadow rounded-lg p-6 overflow-auto">
+          <h5 className="text-xl font-semibold mb-4">Appointments</h5>
+          <table className="min-w-full table-auto border-collapse">
             <thead>
-              <tr>
-                <th>Patient</th>
-                <th>Date</th>
-                <th>Doctor</th>
-                <th>Department</th>
-                <th>Status</th>
-                <th>Visited</th>
-                {admin.role === "Doctor" && <th>Check In</th>}{" "}
-                {admin.role === "Doctor" && <th>Delete</th>}{" "}
-                {/* ✅ Only for doctors */}
+              <tr className="bg-gray-100 text-left text-sm font-semibold text-gray-700">
+                <th className="px-4 py-2 border">Patient</th>
+                <th className="px-4 py-2 border">Date</th>
+                <th className="px-4 py-2 border">Doctor</th>
+                <th className="px-4 py-2 border">Department</th>
+                <th className="px-4 py-2 border">Status</th>
+                <th className="px-4 py-2 border">Visited</th>
+                {admin.role === "Doctor" && (
+                  <>
+                    <th className="px-4 py-2 border">Check In</th>
+                    <th className="px-4 py-2 border">Delete</th>
+                  </>
+                )}
               </tr>
             </thead>
             <tbody>
               {filteredAppointments.length > 0 ? (
                 filteredAppointments.map((appointment) => (
-                  <tr key={appointment._id}>
-                    <td>{`${appointment.firstName} ${appointment.lastName}`}</td>
-                    <td>{appointment.appointment_date.substring(0, 16)}</td>
-                    <td>{`${appointment.doctor.firstName} ${appointment.doctor.lastName}`}</td>
-                    <td>{appointment.department}</td>
-                    <td>
+                  <tr key={appointment._id} className="text-sm border-t">
+                    <td className="px-4 py-2">
+                      {appointment.firstName} {appointment.lastName}
+                    </td>
+                    <td className="px-4 py-2">
+                      {appointment.appointment_date.substring(0, 16)}
+                    </td>
+                    <td className="px-4 py-2">
+                      {appointment.doctor.firstName}{" "}
+                      {appointment.doctor.lastName}
+                    </td>
+                    <td className="px-4 py-2">{appointment.department}</td>
+                    <td className="px-4 py-2">
                       <select
-                        className={
+                        className={`rounded px-7 py-1 ${
                           appointment.status === "Pending"
-                            ? "value-pending"
+                            ? "bg-yellow-100 text-yellow-700"
                             : appointment.status === "Accepted"
-                            ? "value-accepted"
-                            : "value-rejected"
-                        }
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
                         value={appointment.status}
                         onChange={(e) =>
                           handleUpdateStatus(appointment._id, e.target.value)
                         }
                       >
-                        <option value="Pending" className="value-pending">
+                        <option
+                          className="bg-yellow-100 text-yellow-700"
+                          value="Pending"
+                        >
                           Pending
                         </option>
-                        <option value="Accepted" className="value-accepted">
+                        <option
+                          className="bg-green-100 text-green-700"
+                          value="Accepted"
+                        >
                           Accepted
                         </option>
-                        <option value="Rejected" className="value-rejected">
+                        <option
+                          className="bg-red-100 text-red-700"
+                          value="Rejected"
+                        >
                           Rejected
                         </option>
                       </select>
                     </td>
-                    <td>
+                    <td className="px-4 py-2">
                       {appointment.hasVisited ? (
-                        <GoCheckCircleFill className="green" />
+                        <GoCheckCircleFill className="text-green-500 text-xl" />
                       ) : (
-                        <AiFillCloseCircle className="red" />
+                        <AiFillCloseCircle className="text-red-500 text-xl" />
                       )}
                     </td>
 
-                    {/* ✅ Only show Check In checkbox for Doctors */}
                     {admin.role === "Doctor" && (
-                      <td>
-                        <div class="form-check">
+                      <>
+                        <td className="px-4 py-2 text-center">
                           <input
-                            style={{ marginLeft: "20px" }}
                             type="checkbox"
-                            class="form-check-input"
-                            id="checkDefault"
+                            className="form-checkbox h-4 w-4"
                             checked={appointment.hasVisited}
                             onChange={async (e) => {
                               try {
@@ -234,18 +226,11 @@ const Dashboard = () => {
                                 const token =
                                   localStorage.getItem("adminToken") ||
                                   localStorage.getItem("doctorToken");
-
-                                  let tokenName = "";
-                                if (localStorage.getItem("adminToken")) {
-                                  tokenName = "adminToken";
-                                } else if (
-                                  localStorage.getItem("doctorToken")
-                                ) {
-                                  tokenName = "doctorToken";
-                                } else {
-                                  toast.error("No token found");
-                                  return;
-                                }
+                                const tokenName = localStorage.getItem(
+                                  "adminToken"
+                                )
+                                  ? "adminToken"
+                                  : "doctorToken";
 
                                 await axios.put(
                                   `https://hospital-assignment-backend.onrender.com/api/v1/appointment/update/${appointment._id}`,
@@ -259,87 +244,72 @@ const Dashboard = () => {
                                 );
                                 setAppointments((prev) =>
                                   prev.map((a) =>
-                                    a._id === appointmentId ? { ...a, hasVisited: newValue } : a
+                                    a._id === appointment._id
+                                      ? { ...a, hasVisited: newValue }
+                                      : a
                                   )
                                 );
                                 toast.success("Status updated");
                               } catch (error) {
                                 toast.error(
                                   error.response?.data?.message ||
-                                    "Failed to update status"
+                                    "Failed to update"
                                 );
                               }
                             }}
                           />
-                          <label
-                            class="form-check-label"
-                            for="checkDefault"
-                          ></label>
-                        </div>
-                      </td>
-                    )}
-                    {/* ✅ Only show Delete button for Admins */}
-                    {admin.role === "Doctor" && (
-                      <td>
-                      <div className="form-check">
-                        <input
-                          style={{ marginLeft: "20px" }}
-                          type="checkbox"
-                          className="form-check-input"
-                          id={`checkDefault-${appointment._id}`}
-                          onChange={async (e) => {
-                            try {
-                              const token =
-                                localStorage.getItem("adminToken") ||
-                                localStorage.getItem("doctorToken");
-                    
-                              let tokenName = "";
-                              if (localStorage.getItem("adminToken")) {
-                                tokenName = "adminToken";
-                              } else if (localStorage.getItem("doctorToken")) {
-                                tokenName = "doctorToken";
-                              } else {
-                                toast.error("No token found");
-                                return;
+                        </td>
+                        <td className="px-4 py-2 text-center">
+                          <input
+                            type="checkbox"
+                            className="form-checkbox h-4 w-4"
+                            onChange={async () => {
+                              try {
+                                const token =
+                                  localStorage.getItem("adminToken") ||
+                                  localStorage.getItem("doctorToken");
+                                const tokenName = localStorage.getItem(
+                                  "adminToken"
+                                )
+                                  ? "adminToken"
+                                  : "doctorToken";
+
+                                await axios.delete(
+                                  `https://hospital-assignment-backend.onrender.com/api/v1/appointment/delete/${appointment._id}`,
+                                  {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`,
+                                      Tokenname: tokenName,
+                                    },
+                                  }
+                                );
+
+                                setAppointments((prev) =>
+                                  prev.filter((a) => a._id !== appointment._id)
+                                );
+
+                                toast.success(
+                                  "Appointment deleted successfully!"
+                                );
+                              } catch (error) {
+                                toast.error(
+                                  error.response?.data?.message ||
+                                    "Failed to delete appointment"
+                                );
                               }
-                    
-                              // ✅ Send DELETE request
-                              await axios.delete(
-                                `https://hospital-assignment-backend.onrender.com/api/v1/appointment/delete/${appointment._id}`,
-                                {
-                                  headers: {
-                                    Authorization: `Bearer ${token}`,
-                                    Tokenname: tokenName,
-                                  },
-                                }
-                              );
-                    
-                              // ✅ Update state: remove appointment from list
-                              setAppointments((prev) =>
-                                prev.filter((a) => a._id !== appointment._id)
-                              );
-                    
-                              toast.success("Appointment deleted successfully!");
-                            } catch (error) {
-                              toast.error(
-                                error.response?.data?.message || "Failed to delete appointment"
-                              );
-                            }
-                          }}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor={`checkDefault-${appointment._id}`}
-                        ></label>
-                      </div>
-                    </td>
-                    
+                            }}
+                          />
+                        </td>
+                      </>
                     )}
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={admin.role === "Doctor" ? 7 : 6}>
+                  <td
+                    colSpan={admin.role === "Doctor" ? 8 : 6}
+                    className="text-center py-4 text-gray-500"
+                  >
                     No Appointments Found!
                   </td>
                 </tr>
