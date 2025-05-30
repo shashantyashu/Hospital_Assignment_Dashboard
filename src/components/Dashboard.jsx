@@ -50,6 +50,31 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
+  const handleMarkAsPresent = async () => {
+    try {
+      const token =
+        localStorage.getItem("adminToken") ||
+        localStorage.getItem("doctorToken");
+      const tokenName = localStorage.getItem("adminToken")
+        ? "adminToken"
+        : "doctorToken";
+
+      const { data } = await axios.post(
+        "http://localhost:8080/api/v1/attendance/mark-present",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Tokenname: tokenName,
+          },
+        }
+      );
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to mark attendance");
+    }
+  };
+
   const handleUpdateStatus = async (appointmentId, status) => {
     try {
       const token =
@@ -88,6 +113,8 @@ const Dashboard = () => {
     return <Navigate to={"/login"} />;
   }
 
+  console.log(admin);
+
   const filteredAppointments =
     admin.role === "Admin"
       ? appointments
@@ -105,10 +132,14 @@ const Dashboard = () => {
         <div className="grid gap-6 md:grid-cols-3 bg-white shadow rounded-lg p-6 mb-8">
           <div className="flex items-center space-x-4 col-span-2">
             {admin.role === "Admin" ? (
-              <img src={"doc1.webp"} alt="docImg" style={{ height: "150px" }} />
+              <img
+                src={admin.avatar?.url || "doc1.webp"}
+                alt="docImg"
+                style={{ height: "150px" }}
+              />
             ) : (
               <img
-                src={admin.docAvatar?.url || "doc1.webp"}
+                src={admin.avatar?.url || "doc1.webp"}
                 alt="docImg"
                 style={{ height: "150px" }}
               />
@@ -116,11 +147,22 @@ const Dashboard = () => {
             <div>
               <p className="text-gray-500">Hello,</p>
               <h5 className="text-xl font-bold">
-                {admin?.firstName} {admin?.lastName}
+                {admin?.firstName} {admin?.lastName}{" "}
+                {admin.role === "Doctor" &&
+                  `(${admin.doctorDepartment || "N/A"})`}
               </h5>
               <p className="text-sm text-gray-600">
-                <u>({admin?.role})</u> Welcome to your dashboard.
+                Welcome to your dashboard <b>{admin?.role}</b>.
               </p>
+
+              {admin.role === "Doctor" && (
+                <button
+                  onClick={handleMarkAsPresent}
+                  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                >
+                  Present
+                </button>
+              )}
             </div>
           </div>
           <div className="grid gap-4">
@@ -142,6 +184,7 @@ const Dashboard = () => {
           <table className="min-w-full table-auto border-collapse">
             <thead>
               <tr className="bg-gray-100 text-left text-sm font-semibold text-gray-700">
+                <th className="px-4 py-2 border">Applied By</th>
                 <th className="px-4 py-2 border">Patient</th>
                 <th className="px-4 py-2 border">Date</th>
                 <th className="px-4 py-2 border">Doctor</th>
@@ -162,6 +205,9 @@ const Dashboard = () => {
                   <tr key={appointment._id} className="text-sm border-t">
                     <td className="px-4 py-2">
                       {appointment.firstName} {appointment.lastName}
+                    </td>
+                    <td className="px-4 py-2">
+                      {appointment.patientName} <br />
                     </td>
                     <td className="px-4 py-2">
                       {appointment.appointment_date.substring(0, 16)}

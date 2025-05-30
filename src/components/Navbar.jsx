@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { Menu, X } from "lucide-react"; 
+import React, { useContext, useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -8,6 +8,7 @@ import { Context } from "../main";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isAuthenticated, setIsAuthenticated, admin } = useContext(Context);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const handleLogout = async () => {
     try {
@@ -44,6 +45,37 @@ const Navbar = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const token =
+          localStorage.getItem("adminToken") ||
+          localStorage.getItem("doctorToken");
+        const tokenName = localStorage.getItem("adminToken")
+          ? "adminToken"
+          : "doctorToken";
+
+        if (!token) return;
+
+        const { data } = await axios.get(
+          "https://hospital-assignment-backend.onrender.com/api/v1/message/unread-count",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Tokenname: tokenName,
+            },
+          }
+        );
+
+        setUnreadCount(data.count);
+      } catch (err) {
+        console.error("Failed to fetch unread message count");
+      }
+    };
+
+    fetchUnreadCount();
+  }, []);
+
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,9 +103,12 @@ const Navbar = () => {
             <Link to="/" className="text-gray-700 hover:text-blue-600">
               Home
             </Link>
-            <Link to="/doctors" className="text-gray-700 hover:text-blue-600">
+            {/* <Link to="/doctors" className="text-gray-700 hover:text-blue-600">
               Doctors
             </Link>
+            <Link to="/admins" className="text-gray-700 hover:text-blue-600">
+              Admins
+            </Link> */}
             {admin.role === "Admin" && (
               <>
                 <Link
@@ -90,8 +125,18 @@ const Navbar = () => {
                 </Link>
               </>
             )}
-            <Link to="/messages" className="text-gray-700 hover:text-blue-600">
+            <Link
+              to="/messages"
+              className="relative text-gray-700 hover:text-blue-600"
+            >
+              {" "}
+              {/* //text-gray-700 hover:text-blue-600 */}
               Messages
+              {unreadCount > 0 && (
+                <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                  {unreadCount}
+                </span>
+              )}
             </Link>
             <button
               onClick={handleLogout}
@@ -109,9 +154,12 @@ const Navbar = () => {
             <Link to="/" className="text-gray-700 hover:text-blue-600">
               Home
             </Link>
-            <Link to="/doctors" className="text-gray-700 hover:text-blue-600">
+            {/* <Link to="/doctors" className="text-gray-700 hover:text-blue-600">
               Doctors
             </Link>
+            <Link to="/admins" className="text-gray-700 hover:text-blue-600">
+              Admins
+            </Link> */}
             {admin.role === "Admin" && (
               <>
                 <Link
@@ -134,7 +182,7 @@ const Navbar = () => {
             <button
               onClick={handleLogout}
               // className="text-gray-700 hover:text-red-600 transition"
-              className="px-2 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition"
+              className="w-[100px] self-end px-2 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition"
             >
               Logout
             </button>

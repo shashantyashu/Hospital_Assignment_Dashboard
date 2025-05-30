@@ -8,7 +8,6 @@ const Login = () => {
   const [role, setRole] = useState("Admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const { isAuthenticated, setIsAuthenticated } = useContext(Context);
   const navigateTo = useNavigate();
@@ -18,7 +17,7 @@ const Login = () => {
     try {
       const res = await axios.post(
         "https://hospital-assignment-backend.onrender.com/api/v1/user/login",
-        { email, password, confirmPassword, role },
+        { email, password, role },
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -34,7 +33,6 @@ const Login = () => {
       navigateTo("/");
       setEmail("");
       setPassword("");
-      setConfirmPassword("");
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     }
@@ -78,14 +76,6 @@ const Login = () => {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
