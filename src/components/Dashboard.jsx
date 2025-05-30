@@ -60,7 +60,7 @@ const Dashboard = () => {
         : "doctorToken";
 
       const { data } = await axios.post(
-        "http://localhost:8080/api/v1/attendance/mark-present",
+        "https://hospital-assignment-backend.onrender.com/api/v1/attendance/mark-present",
         {},
         {
           headers: {
